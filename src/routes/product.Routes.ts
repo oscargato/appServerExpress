@@ -8,10 +8,10 @@ import { newProduct,
 
 const routesProduct = Router();
 
-routesProduct.post('/new', newProduct) //Listo
-routesProduct.get('/product/:id', validateToken, getProduct) //Listo
-routesProduct.get('/all', validateToken, getProducts) //Listo
-routesProduct.put("/:id", validateToken, updateProduct); //Listo
-routesProduct.delete("/:id", validateToken, deleteProduct);//Listo
+routesProduct.post('/new', newProduct);
+routesProduct.get('/product/:id', validateToken, getProduct);
+routesProduct.get('/all', validateToken, getProducts);
+routesProduct.put("/:id", validateToken, updateProduct);
+routesProduct.delete("/:id", validateToken, deleteProduct);
 
 export { routesProduct }

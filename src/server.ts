@@ -8,7 +8,6 @@ import { User } from './models/user.Model';
 import { routesProduct } from "./routes/product.Routes";
 import { routesUser } from "./routes/user.Routes";
 
-
 class Server{
 
 	private app: express.Application;

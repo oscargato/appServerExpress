@@ -9,10 +9,10 @@ import { newUser,
 
 const routesUser = Router();
 
-routesUser.post('/login', loginUser)  
-routesUser.post('/new', newUser) 
-routesUser.get('/user/:id', validateToken, getUser) 
-routesUser.get('/all', validateToken, getUsers) 
+routesUser.post('/login', loginUser);  
+routesUser.post('/new', newUser); 
+routesUser.get('/user/:id', validateToken, getUser); 
+routesUser.get('/all', validateToken, getUsers); 
 routesUser.put("/:id", validateToken, updateUser); 
 routesUser.delete("/:id", validateToken, deleteUser); 
 

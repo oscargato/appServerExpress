@@ -1,76 +1,73 @@
 import bcrypt from 'bcrypt';
-import  Jwt  from 'jsonwebtoken';
-import { getAllUsers, 
-         getUserById, 
-         getUpdateUser, 
-         getDeleteUser,
-         getUserByName,
-         getCreateNewUser 
-       } from '../repositories/user.Repositories';
+import Jwt from 'jsonwebtoken';
+import {
+  getAllUsers,
+  getUserById,
+  getUpdateUser,
+  getDeleteUser,
+  getUserByName,
+  getCreateNewUser,
+} from '../repositories/user.Repositories';
 
-export const userLogin = async (username:string, password:string)=>{
+export const userLogin = async (username: string, password: string) => {
+  const user: any = await getUserByName(username);
+  if (!user) {
+    throw new Error('Credeciales incorrectas');
+  }
 
-    const user:any = await getUserByName(username)
-    if(!user){
-        throw new Error('Credeciales incorrectas'); 
-    }
+  const passwordValid = await bcrypt.compare(password, user.password);
+  if (!passwordValid) {
+    throw new Error('Credeciales incorrectas');
+  }
 
-    const passwordValid = await bcrypt.compare(password, user.password) 
-    if(!passwordValid){
-        throw new Error('Credeciales incorrectas'); 
-    }
+  const token = Jwt.sign({ username }, process.env.SECRET_KEY || 'Q%Wh6nqtpYbW3hPC', { expiresIn: '1800000' });
+  return token;
+};
 
-    const token = Jwt.sign({ username },process.env.SECRET_KEY || 'Q%Wh6nqtpYbW3hPC', { expiresIn:'1800000' })
+export const userNew = async (username: string, password: string) => {
+  const user = await getUserByName(username);
+  if (user) {
+    throw new Error(`Usuario ${username} ya existe`);
+  } else {
+    const hashPassword = await bcrypt.hash(password, 10);
+    const createUser = await getCreateNewUser(username, hashPassword);
+    return createUser;
+  }
+};
 
-    return token;
-}
+export const allUsers = async () => {
+  const user = await getAllUsers();
+  return user;
+};
 
-export const userNew = async (username:string, password:string)=>{    
-    const user = await getUserByName(username);
-    
-    if(user){
-        throw new Error(`Usuario ${ username } ya existe`);    
-    }
-    else
-    {   const hashPassword = await bcrypt.hash(password,10); 
-        const createUser = await getCreateNewUser(username,hashPassword);
-        return createUser; 
-    }    
-}
+export const userById = async (id: number) => {
+  const user = await getUserById(id);
 
-export const allUsers = async ()=>{
-    const user = await getAllUsers();
-    return user;
-}
+  if (!user) {
+    throw new Error('Usuario no encontrado');
+  }
 
-export const userById = async (id:number)=>{
-    const user = await getUserById(id);
+  return user;
+};
 
-    if(!user){
-        throw new Error('Usuario no encontrado');
-    }
+export const userUpdate = async (username: string, password: string, id: number) => {
+  const user = await getUserById(id);
+  if (!user) {
+    throw new Error('Usuario no encontrado');
+  }
 
-    return user;
-}
+  const hashPassword = await bcrypt.hash(password, 10);
+  const updateUser = await getUpdateUser(username, hashPassword, id);
 
-export const userUpdate = async (username:string, password:string, id:number)=>{
-    const user = await getUserById(id);
-    if(!user){
-        throw new Error('Usuario no encontrado');    
-    }
+  return updateUser;
+};
 
-    const hashPassword = await bcrypt.hash(password,10);
-    const updateUser = await getUpdateUser(username,hashPassword,id);
+export const userDelete = async (id: number) => {
+  const user = await getDeleteUser(id);
 
-    return updateUser;
-}
+  if (!user) {
+    throw new Error('Usuario no encontrado');
+  }
 
-export const userDelete = async (id:number)=>{
-    const user = await getDeleteUser(id);
-
-    if(!user){
-        throw new Error('Usuario no encontrado');
-    }
-
-    return user;    
-}
+  return user;
+};

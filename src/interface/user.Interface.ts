@@ -1,6 +1,6 @@
-export interface datUser{
-    id:number;
-    username:string;
-    password:string;
-    rol:string;
+export interface datUser {
+  id: number;
+  username: string;
+  password: string;
+  rol: string;
 }

@@ -14,13 +14,25 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const morgan_1 = __importDefault(require("morgan"));
-const helmet_1 = __importDefault(require("helmet"));
+//import helmet from 'helmet';
 const cors_1 = __importDefault(require("cors"));
 require("dotenv/config");
-//import { routerCars } from "./routes/cars.Routes";
-//import { routerEmployee } from "./routes/employee.Routes";
-//import { connection } from './database/configMySQL/mysql'; 
+const product_Model_1 = require("./models/product.Model");
+const user_Model_1 = require("./models/user.Model");
+const product_Routes_1 = require("./routes/product.Routes");
+const user_Routes_1 = require("./routes/user.Routes");
 class Server {
+    connectionDB() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                yield product_Model_1.Product.sync();
+                yield user_Model_1.User.sync();
+            }
+            catch (error) {
+                console.log('Error en base de datos');
+            }
+        });
+    }
     constructor() {
         this.app = (0, express_1.default)();
         this.config();
@@ -28,24 +40,19 @@ class Server {
         this.routes();
     }
     config() {
+        this.connectionDB();
         this.app.set('port', process.env.PORT || 3000);
     }
     middlewares() {
         this.app.use((0, morgan_1.default)('dev'));
         this.app.use(express_1.default.json());
         this.app.use(express_1.default.urlencoded({ extended: true }));
-        this.app.use((0, helmet_1.default)());
+        //this.app.use(helmet());		
         this.app.use((0, cors_1.default)());
     }
     routes() {
-        /*
-        this.app.get('/api/prueba',async(req,res)=>{
-            const result = await connection.query('SELECT * FROM empleados')
-            res.json(result[0])
-        });
-        */
-        //this.app.use('/api',routerCars);
-        //this.app.use('/api',routerEmployee);
+        this.app.use('/api/products', product_Routes_1.routesProduct);
+        this.app.use('/api/users', user_Routes_1.routesUser);
     }
     start() {
         return __awaiter(this, void 0, void 0, function* () {
